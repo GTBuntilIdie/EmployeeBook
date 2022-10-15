@@ -2,11 +2,15 @@ package com.example.spring.EmployeeBook.service;
 
 import com.example.spring.EmployeeBook.exception.EmployeeAlreadyAddedException;
 import com.example.spring.EmployeeBook.exception.EmployeeNotFoundException;
+import com.example.spring.EmployeeBook.exception.InvalidInputException;
 import com.example.spring.EmployeeBook.model.Employee;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static org.apache.commons.lang3.StringUtils.*;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
@@ -22,6 +26,10 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public Employee add(String firstName, String lastName, double salary, int department) {
 
+        if (!validateInPut(firstName, lastName)) {
+            throw new InvalidInputException();
+        }
+
         Employee employee = new Employee(firstName, lastName, salary, department);
         if (employees.containsKey(employee.getFullName())) {
             throw new EmployeeAlreadyAddedException();
@@ -32,6 +40,11 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public Employee remove(String firstName, String lastName) {
+
+        if (!validateInPut(firstName, lastName)) {
+            throw new InvalidInputException();
+        }
+
         Employee employee = new Employee(firstName, lastName, 0, 0);
         if (employees.containsKey(employee.getFullName())) {
             return employees.remove(employee.getFullName());
@@ -41,6 +54,11 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public Employee find(String firstName, String lastName) {
+
+        if (!validateInPut(firstName, lastName)) {
+            throw new InvalidInputException();
+        }
+
         Employee employee = new Employee(firstName, lastName, 0, 0);
         if (employees.containsKey(employee.getFullName())) {
             return employees.get(employee.getFullName());
@@ -79,6 +97,9 @@ public class EmployeeServiceImpl implements EmployeeService {
         return employees.values().stream()
                 .sorted(Comparator.comparing(Employee::getDepartment))
                 .collect(Collectors.toList());
+    }
+    private boolean validateInPut(String firstName, String lastName) {
+        return isAlpha(firstName) && isAlpha(lastName);
     }
 
 }
