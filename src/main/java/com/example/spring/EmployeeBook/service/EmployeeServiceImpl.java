@@ -15,6 +15,16 @@ import static org.apache.commons.lang3.StringUtils.*;
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
 
+    public Map<String, Employee> getEmployees() {
+        return employees;
+    }
+
+    public List<Employee> getEmployeeList() {
+        return employeeList;
+    }
+
+    private  final List<Employee> employeeList = new ArrayList<>(getEmployees().values());
+
     private final Map<String, Employee> employees;
 
 
@@ -73,28 +83,30 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public Employee maxSalaryDepartment(int department) {
-        return employees.values().stream()
+
+        List<Employee> employeeList= new ArrayList<>(getEmployees().values());
+        return employeeList.stream()
                 .filter(employee -> employee.getDepartment() == department)
                 .max(Comparator.comparing(Employee::getSalary))
                 .orElseThrow(EmployeeNotFoundException::new);
     }
     @Override
     public Employee minSalaryDepartment(int department) {
-        return employees.values().stream()
+        return employeeList.stream()
                 .filter(employee -> employee.getDepartment() == department)
                 .min(Comparator.comparing(Employee::getSalary))
                 .orElseThrow(EmployeeNotFoundException::new);
     }
     @Override
     public List<Employee> allDepartment(int department) {
-        return employees.values().stream()
+        return employeeList.stream()
                 .filter(employee -> employee.getDepartment() == department)
                 .sorted(Comparator.comparing(Employee::getDepartment))
                 .collect(Collectors.toList());
     }
     @Override
     public List<Employee> allEmployee(){
-        return employees.values().stream()
+        return employeeList.stream()
                 .sorted(Comparator.comparing(Employee::getDepartment))
                 .collect(Collectors.toList());
     }
